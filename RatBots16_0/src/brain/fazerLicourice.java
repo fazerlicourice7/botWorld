@@ -22,6 +22,7 @@ public class fazerLicourice extends BotBrain {
     //ArrayList<Integer> path = new ArrayList<>();
     Random rand;
     //int timesBeenThere[][] = new int[getArena().length][getArena()[0].length];
+    static int lastDirection = -1;
 
     /**
      *
@@ -35,12 +36,10 @@ public class fazerLicourice extends BotBrain {
     @Override
     public int chooseAction() {
         GameObject[][] theArena = getArena();
-        int selection;
         Location Bot = getLocation();
         Location prize = findPrize(Bot, theArena);
         System.out.println("Destination: " + prize.toString());
-        selection = moveTo(prize, Bot, theArena);
-        return selection;
+        return moveTo(prize, Bot, theArena);
     }
 
     /**
@@ -102,105 +101,50 @@ public class fazerLicourice extends BotBrain {
             toEast = false;
             toWest = false;
         }
-        boolean vertical = rand.nextBoolean();
-        if (vertical || (!toWest && !toEast)) {
-            System.out.println("Vertical: " + vertical + ", toWest: " + toWest + ", toEast: " + toEast);
-            if (toNorth) {
-                direction = MOVE_NORTH;
-            } else if (toSouth) {
-                direction = MOVE_SOUTH;
-            }
-        } else if (!vertical || (!toNorth && !toSouth)) {
-            System.out.println("Horizontal: " + !vertical + ", toNorth: " + toNorth + ", toSouth: " + toSouth);
-            if (toWest) {
-                direction = MOVE_WEST;
-            } else if (toEast) {
-                direction = MOVE_EAST;
-            }
-        }
-        /*if (!canMove(MOVE_NORTH, Bot)) {
-            if (theArena[Bot.getAdjacentLocation(MOVE_NORTH).getRow()][Bot.getAdjacentLocation(MOVE_NORTH).getCol()] instanceof Block) {
-                timesBeenThere[Bot.getAdjacentLocation(MOVE_NORTH).getRow()][Bot.getAdjacentLocation(MOVE_NORTH).getCol()] += 100;
-            }
-        }
-        if (!canMove(MOVE_SOUTH, Bot)) {
-            if (theArena[Bot.getAdjacentLocation(MOVE_SOUTH).getRow()][Bot.getAdjacentLocation(MOVE_SOUTH).getCol()] instanceof Block) {
-                timesBeenThere[Bot.getAdjacentLocation(MOVE_SOUTH).getRow()][Bot.getAdjacentLocation(MOVE_SOUTH).getCol()] += 100;
-            }
-        }
-        if (!canMove(MOVE_EAST, Bot)) {
-            if (theArena[Bot.getAdjacentLocation(MOVE_EAST).getRow()][Bot.getAdjacentLocation(MOVE_EAST).getCol()] instanceof Block) {
-                timesBeenThere[Bot.getAdjacentLocation(MOVE_EAST).getRow()][Bot.getAdjacentLocation(MOVE_EAST).getCol()] += 100;
-            }
-        }
-        if (!canMove(MOVE_WEST, Bot)) {
-            if (theArena[Bot.getAdjacentLocation(MOVE_WEST).getRow()][Bot.getAdjacentLocation(MOVE_WEST).getCol()] instanceof Block) {
-                timesBeenThere[Bot.getAdjacentLocation(MOVE_WEST).getRow()][Bot.getAdjacentLocation(MOVE_WEST).getCol()] += 100;
-            }
-        }
-        int timesBeenNorth = timesBeenThere[Bot.getAdjacentLocation(MOVE_NORTH).getRow()][Bot.getAdjacentLocation(MOVE_NORTH).getCol()],
-                timesBeenSouth = timesBeenThere[Bot.getAdjacentLocation(MOVE_SOUTH).getRow()][Bot.getAdjacentLocation(MOVE_SOUTH).getCol()],
-                timesBeenEast = timesBeenThere[Bot.getAdjacentLocation(MOVE_EAST).getRow()][Bot.getAdjacentLocation(MOVE_EAST).getCol()],
-                timesBeenWest = timesBeenThere[Bot.getAdjacentLocation(MOVE_WEST).getRow()][Bot.getAdjacentLocation(MOVE_WEST).getCol()];
-        if (timesBeenNorth == Math.min(timesBeenWest, Math.min(timesBeenEast, Math.min(timesBeenSouth, timesBeenNorth)))) {
+        if (lastDirection == MOVE_NORTH && toNorth) {
             direction = MOVE_NORTH;
-        } else if (timesBeenSouth == Math.min(timesBeenWest, Math.min(timesBeenEast, Math.min(timesBeenSouth, timesBeenNorth)))) {
+        } else if (lastDirection == MOVE_SOUTH && toSouth) {
             direction = MOVE_SOUTH;
-        } else if (timesBeenEast == Math.min(timesBeenWest, Math.min(timesBeenEast, Math.min(timesBeenSouth, timesBeenNorth)))) {
+        } else if (lastDirection == MOVE_EAST && toEast) {
             direction = MOVE_EAST;
-        } else if (timesBeenWest == Math.min(timesBeenWest, Math.min(timesBeenEast, Math.min(timesBeenSouth, timesBeenNorth)))) {
+        } else if (lastDirection == MOVE_WEST && toWest) {
             direction = MOVE_WEST;
-        }*/
- /*if (toNorth && toWest) {
-            if (canMove(MOVE_NORTH, Bot)) {
-                direction = MOVE_NORTH;
-            } else if (canMove(MOVE_WEST, Bot)) {
-                direction = MOVE_WEST;
+        } else if (true) {
+            if (Math.abs(Bot.getCol() - Destination.getCol()) < Math.abs(Bot.getRow() - Destination.getRow())) {
+                if (toNorth) {
+                    direction = MOVE_NORTH;
+                } else if (toSouth) {
+                    direction = MOVE_SOUTH;
+                }
+            } else if (Math.abs(Bot.getRow() - Destination.getRow()) < Math.abs(Bot.getCol() - Destination.getCol())) {
+                if (toWest) {
+                    direction = MOVE_WEST;
+                } else if (toEast) {
+                    direction = MOVE_EAST;
+                }
+            } else {
+                boolean vertical = rand.nextBoolean();
+                if (vertical || (!toWest && !toEast)) {
+                    System.out.println("Vertical: " + vertical + ", toWest: " + toWest + ", toEast: " + toEast + ", toNorth: " + toNorth + ", toSouth: " + toSouth);
+                    if (toNorth) {
+                        direction = MOVE_NORTH;
+                    } else if (toSouth) {
+                        direction = MOVE_SOUTH;
+                    }
+                } else if (!vertical || (!toNorth && !toSouth)) {
+                    System.out.println("Horizontal: " + !vertical + ", toNorth: " + toNorth + ", toSouth: " + toSouth + ", toWest: " + toWest + ", toEast: " + toEast);
+                    if (toWest) {
+                        direction = MOVE_WEST;
+                    } else if (toEast) {
+                        direction = MOVE_EAST;
+                    }
+                }
             }
-        } else if (toNorth && toEast) {
-            if (canMove(MOVE_NORTH, Bot)) {
-                direction = MOVE_NORTH;
-            } else if (canMove(MOVE_EAST, Bot)) {
-                direction = MOVE_EAST;
-            }
-        } else if (toSouth && toWest) {
-            if (canMove(MOVE_SOUTH, Bot)) {
-                direction = MOVE_SOUTH;
-            } else if (canMove(MOVE_WEST, Bot)) {
-                direction = MOVE_WEST;
-            }
-        } else if (toSouth && toEast) {
-            if (canMove(MOVE_SOUTH, Bot)) {
-                direction = MOVE_SOUTH;
-            } else if (canMove(MOVE_EAST, Bot)) {
-                direction = MOVE_EAST;
-            }
-        } else if (toNorth) {
-            //if (canMove(MOVE_NORTH, Bot)) {
-            direction = MOVE_NORTH;
-            //}
-        } else if (toSouth) {
-            //if (canMove(MOVE_SOUTH, Bot)) {
-            direction = MOVE_SOUTH;
-            //}
-        } else if (toEast) {
-            //if (canMove(MOVE_EAST, Bot)) {
-            direction = MOVE_EAST;
-            //}
-        } else if (toWest) {
-            //if (canMove(MOVE_WEST, Bot)) {
-            direction = MOVE_WEST;
-            //}
-        }*/
- /*else {
-            direction = BLOCK_WEST;
-        }*/
-        int counter = 0;
+        }
         boolean samerow = (Bot.getRow() == Destination.getRow());
         boolean samecol = (Bot.getCol() == Destination.getCol());
-
-        while (!canMove(direction, Bot)
-                && counter < 7) {
+        lastDirection = direction;
+        if (!canMove(direction, Bot)) {
             if (!onPerimeter(Bot) || samecol || samerow) {
                 System.out.println("called moveAroundObstacle from " + Bot.toString());
                 System.out.println("initialDirection: " + direction);
@@ -208,43 +152,12 @@ public class fazerLicourice extends BotBrain {
             } else {
                 direction = moveTowardCenter(Bot);
             }
-            counter++;
         }
-
         System.out.println(direction + " from " + Bot.toString());
         return direction;
     }
 
     private int moveAroundObstacle(int initialDirection, Location Bot) {
-        /*if (canMove(initialDirection, Bot)) {
-            return initialDirection;
-        } else if (canMove(initialDirection + 90, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection + 90))) {
-            return initialDirection + 90;
-        } else if (canMove(initialDirection + 180, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection + 180))) {
-            return initialDirection + 180;
-        } else if (canMove(initialDirection + 270, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection + 270))) {
-            return initialDirection + 270;
-        } else if (canMove(initialDirection - 90, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection - 90))) {
-            return initialDirection - 90;
-        } else if (canMove(initialDirection - 180, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection - 180))) {
-            return initialDirection - 180;
-        } else if (canMove(initialDirection - 270, Bot) && canMove(initialDirection, Bot.getAdjacentLocation(initialDirection - 270))) {
-            return initialDirection - 270;
-        } else if (canMove(initialDirection + 90, Bot)) {
-            return initialDirection + 90;
-        } else if (canMove(initialDirection + 180, Bot)) {
-            return initialDirection + 180;
-        } else if (canMove(initialDirection + 270, Bot)) {
-            return initialDirection + 270;
-        } else if (canMove(initialDirection - 90, Bot)) {
-            return initialDirection - 90;
-        } else if (canMove(initialDirection - 180, Bot)) {
-            return initialDirection - 180;
-        } else if (canMove(initialDirection - 270, Bot)) {
-            return initialDirection - 270;
-        } else {
-            return REST;
-        }*/
         boolean canMoveDirection;
         Location currentLocation = new Location(Bot.getRow(), Bot.getCol());
         int direction, Destination = -1;
@@ -346,16 +259,16 @@ public class fazerLicourice extends BotBrain {
     private Location findPrize(Location Bot, GameObject[][] arena) {
         int x = 0, y = 0, currentMV = 0;
         Location currentMostV = new Location(9, 10);
-        int numberCurrentMVP = 0;
+        int closestDistance = 0, numberCurrentMVP = 0;
         for (int row = 0; row < arena.length; row++) {
             for (int col = 0; col < arena[0].length; col++) {
                 if (arena[row][col] instanceof Prize) {
                     Prize prize = (Prize) arena[row][col];
-                    //make sure that this only returns the highest value prize
+                    //make sure that this only returns the closest, highest value prize
                     if (prize.getValue() > currentMV) {
                         currentMV = prize.getValue();
                         currentMostV = prize.getLocation();
-                        numberCurrentMVP = 0;
+                        closestDistance = Bot.distanceTo(currentMostV);
                     } else if (prize.getValue() == currentMV) {
                         numberCurrentMVP++;
                     }
@@ -365,7 +278,6 @@ public class fazerLicourice extends BotBrain {
         if (currentMV == 10 || numberCurrentMVP > 0) {
             currentMostV = findClosestPrize(currentMV, Bot, arena);
         }
-        //System.out.println("No Prizes in arena.");
         return currentMostV;
     }
 
