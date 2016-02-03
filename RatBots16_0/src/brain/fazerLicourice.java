@@ -73,14 +73,19 @@ public class fazerLicourice extends BotBrain {
 
     private boolean isGoldBlocked() {
         boolean right = theArena[10][19] instanceof Block,
+                rightRoom = theArena[9][16] instanceof Block && theArena[11][16] instanceof Block,
                 left = theArena[10][1] instanceof Block,
+                leftRoom = theArena[9][4] instanceof Block && theArena[11][4] instanceof Block,
                 top = theArena[1][10] instanceof Block,
-                bottom = theArena[19][10] instanceof Block;
-        return right && left && top && bottom;
+                topRoom = theArena[4][9] instanceof Block && theArena[4][11] instanceof Block,
+                bottom = theArena[19][10] instanceof Block,
+                bottomRoom = theArena[16][9] instanceof Block && theArena[16][11] instanceof Block;
+        return (right || rightRoom) && (left || leftRoom) && (top || topRoom) && (bottom || bottomRoom);
     }
 
     private int blockGold(Location Bot) {
-        if (Bot.equals(new Location(4, 10)) && (!(theArena[4][9] instanceof Block) || !(theArena[4][11] instanceof Block))) {//top
+        //top
+        if (Bot.equals(new Location(4, 10)) && (!(theArena[4][9] instanceof Block) || !(theArena[4][11] instanceof Block))) {
             if (!(theArena[4][9] instanceof Block)) {
                 return BLOCK_WEST;
             } else if (!(theArena[4][11] instanceof Block)) {
@@ -88,7 +93,8 @@ public class fazerLicourice extends BotBrain {
             } else {
                 return REST;
             }
-        } else if (Bot.equals(new Location(10, 4)) && (!(theArena[9][4] instanceof Block) || !(theArena[11][4] instanceof Block))) {//left
+        }//left
+        else if (Bot.equals(new Location(10, 4)) && (!(theArena[9][4] instanceof Block) || !(theArena[11][4] instanceof Block))) {
             if (!(theArena[9][4] instanceof Block)) {
                 return BLOCK_NORTH;
             } else if (!(theArena[11][4] instanceof Block)) {
@@ -96,7 +102,8 @@ public class fazerLicourice extends BotBrain {
             } else {
                 return REST;
             }
-        } else if (Bot.equals(new Location(10, 16)) && (!(theArena[9][16] instanceof Block) || !(theArena[11][16] instanceof Block))) {//right
+        }//right
+        else if (Bot.equals(new Location(10, 16)) && (!(theArena[9][16] instanceof Block) || !(theArena[11][16] instanceof Block))) {
             if (!(theArena[9][16] instanceof Block)) {
                 return BLOCK_NORTH;
             } else if (!(theArena[11][16] instanceof Block)) {
@@ -104,7 +111,8 @@ public class fazerLicourice extends BotBrain {
             } else {
                 return REST;
             }
-        } else if (Bot.equals(new Location(16, 10)) && (!(theArena[16][9] instanceof Block) || !(theArena[16][11] instanceof Block))) {//bottom
+        }//bottom
+        else if (Bot.equals(new Location(16, 10)) && (!(theArena[16][9] instanceof Block) || !(theArena[16][11] instanceof Block))) {
             if (!(theArena[16][9] instanceof Block)) {
                 return BLOCK_WEST;
             } else if (!(theArena[16][11] instanceof Block)) {
@@ -143,13 +151,13 @@ public class fazerLicourice extends BotBrain {
                 top = 1000;
             }
             int min = Math.min(right, Math.min(left, Math.min(bottom, top)));
-            if (min == right && !(theArena[10][18] instanceof Block)) {
+            if (min == right && (!(theArena[10][18] instanceof Block) && (!(theArena[9][16] instanceof Block) || !(theArena[11][16] instanceof Block)))) {
                 return moveTo(Bot, new Location(10, 18), true);
-            } else if (min == left && !(theArena[10][2] instanceof Block)) {
+            } else if (min == left && (!(theArena[10][2] instanceof Block) && (!(theArena[9][4] instanceof Block) || !(theArena[11][14] instanceof Block)))) {
                 return moveTo(Bot, new Location(10, 2), true);
-            } else if (min == top && !(theArena[2][10] instanceof Block)) {
+            } else if (min == top && (!(theArena[2][10] instanceof Block) && (!(theArena[4][9] instanceof Block) || !(theArena[4][11] instanceof Block)))) {
                 return moveTo(Bot, new Location(2, 10), true);
-            } else if (min == bottom && !(theArena[18][10] instanceof Block)) {
+            } else if (min == bottom && (!(theArena[18][10] instanceof Block) && (!(theArena[16][9] instanceof Block) || !(theArena[16][11] instanceof Block)))) {
                 return moveTo(Bot, new Location(18, 10), true);
             } else {
                 return moveTo(Bot, new Location(9, 10), true);
@@ -288,7 +296,7 @@ public class fazerLicourice extends BotBrain {
         Location currentLocation = Bot;
         int tempDirection, direction = -1;
         int counter = 0, lowestDistanceToPrize = 1000;
-        if (initialDirection == 0 || initialDirection == 180) {
+        if ((initialDirection == 0 || initialDirection == 180) && (canMove(MOVE_EAST, Bot) || canMove(MOVE_WEST, Bot))) {
             do {
                 tempDirection = MOVE_EAST;
                 canMoveDirection = canMove(initialDirection, currentLocation);
@@ -312,7 +320,9 @@ public class fazerLicourice extends BotBrain {
             if (canMoveDirection && lowestDistanceToPrize == currentLocation.distanceTo(destination)) {
                 direction = tempDirection;
             }
-        } else if (initialDirection == 90 || initialDirection == 270) {
+        } else if ((initialDirection == 0 || initialDirection == 180) && !canMove(MOVE_EAST, Bot) && !canMove(MOVE_WEST, Bot)) {
+            direction = Math.abs(initialDirection - 180);
+        } else if ((initialDirection == 90 || initialDirection == 270) && (canMove(MOVE_NORTH, Bot) || canMove(MOVE_SOUTH, Bot))) {
             counter = 0;
             do {
                 tempDirection = MOVE_NORTH;
@@ -336,9 +346,8 @@ public class fazerLicourice extends BotBrain {
             if (canMoveDirection && lowestDistanceToPrize == currentLocation.distanceTo(destination)) {
                 direction = tempDirection;
             }
-        }
-        if (!canMove(direction, Bot)) {
-            direction = Math.abs(direction - 180);
+        } else if ((initialDirection == 90 || initialDirection == 270) && !canMove(MOVE_NORTH, Bot) && !canMove(MOVE_SOUTH, Bot)) {
+            direction = Math.abs(initialDirection - 180);
         }
         return direction;
     }
