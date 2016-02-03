@@ -20,8 +20,14 @@ public class SmartRandom extends BotBrain {
     public int chooseAction() {
         int direction = randy.nextInt(4) * 90; //Choose a random move.
 
-        if (randy.nextInt(15) == 9) {
+        
+        /*if (randy.nextInt(15) == 9) {
             direction += 1000; //DARTING! (occasionally)
+        }*/
+        if (getMoveNumber() % 2 == 0) {
+            direction = BLOCK_NORTH;
+        } else {
+            direction = MOVE_NORTH;
         }
         int loopCount = 0;
         //need this loopCounter so that we never end up in an infinite loop!
@@ -29,6 +35,15 @@ public class SmartRandom extends BotBrain {
             //Choose a new direction if I can't move the way I've chosen. 
             loopCount++;
             direction = randy.nextInt(4) * 90;
+        }
+       if(!canMove(MOVE_NORTH)){
+            System.out.println("can't move north");
+        } else if(!canMove(MOVE_EAST)){
+            System.out.println("can't move east");
+        }else if(!canMove(DART_WEST)){
+            System.out.println("can't move west");
+        }else if(!canMove(MOVE_SOUTH)){
+            System.out.println("can't move south");
         }
 
         return direction;
