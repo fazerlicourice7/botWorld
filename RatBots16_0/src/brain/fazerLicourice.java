@@ -349,13 +349,6 @@ public class fazerLicourice extends BotBrain {
         } else if ((initialDirection == 90 || initialDirection == 270) && !canMove(MOVE_NORTH, Bot) && !canMove(MOVE_SOUTH, Bot)) {
             direction = Math.abs(initialDirection - 180);
         }
-        /*int counter2 = 0;
-        while (!canMove(direction, Bot) && counter2 < 16) {
-            System.out.println("Wants to move " + direction);
-            direction = rand.nextInt(3) * 90;
-            counter2++;
-        }
-        System.out.println("New direction: " + direction);*/
         return direction;
     }
 
