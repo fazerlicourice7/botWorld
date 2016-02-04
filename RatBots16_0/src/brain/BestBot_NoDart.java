@@ -52,7 +52,7 @@ public class BestBot_NoDart extends BotBrain {
         column = getCol();
 
         Location prize = getBestPrizeLocation();
-        System.out.println(prize);
+        //System.out.println(prize);
         direction = chooseBestDirectiontoLocation(prize);
         return direction;
     }
@@ -108,19 +108,19 @@ public class BestBot_NoDart extends BotBrain {
         int bestDir = 0;
         for (int dir = 0; dir < 360; dir += 90) { //loops through all possible directions
             int score = 0;
-            if(isThereGoldPrize()){
-            if(dir == 0 && row == 16 && column == 10){
-              score += 5;  
-            }
-            if(dir == 180 && row == 4 && column == 10){
-              score += 5;  
-            }
-            if(dir == 90 && row == 10 && column == 4){
-              score += 5;  
-            }
-            if(dir == 270 && row == 10 && column == 16){
-              score += 5;  
-            }
+            if (isThereGoldPrize()) {
+                if (dir == 0 && row == 16 && column == 10) {
+                    score += 5;
+                }
+                if (dir == 180 && row == 4 && column == 10) {
+                    score += 5;
+                }
+                if (dir == 90 && row == 10 && column == 4) {
+                    score += 5;
+                }
+                if (dir == 270 && row == 10 && column == 16) {
+                    score += 5;
+                }
             }
             if (!canMove(dir)) { //if cant move in direction - score +1000
                 score += 1000;
@@ -135,15 +135,14 @@ public class BestBot_NoDart extends BotBrain {
             score += ifInWalls(dir); //score increases if inside walled locations
             score += getTimesBeenThere(dir); //score increases depending on how manyTimesBeen to set direction
             score += distanceTo(goal, dir); //score adds distance from block in set dir to goal location
-            
+
             //ystem.out.println("Score in Direction " + dir + ": " + score + " CurrentLocation: " + row + ", " + column);
-            
             if (score < lowestScore) { //if score lower than lowestScore, current direction becomes the best
                 bestDir = dir;
                 lowestScore = score;
             }
         }
-        
+
         return bestDir;
     }
 
@@ -161,7 +160,7 @@ public class BestBot_NoDart extends BotBrain {
         int row2 = goal.getRow();
         int col2 = goal.getCol();
         if (!inRange()) {
-          //  System.out.println("NOT in Range for Gold. CurrentLocation: " + row + ", " + column);
+            //  System.out.println("NOT in Range for Gold. CurrentLocation: " + row + ", " + column);
         }
         //(row2 == 1 && col2 == 10) && (row <= 3 && row >= 0) && ((column <= 20 && column >= 7) || (column <= 7) && column >= 0)
         if (row2 == 1 && col2 == 10 && !inRange()) {
@@ -374,6 +373,7 @@ public class BestBot_NoDart extends BotBrain {
         }
         return result;
     }
+
     public boolean isTherePrize() {
         boolean result;
         arena = getArena();
